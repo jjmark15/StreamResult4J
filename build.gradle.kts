@@ -25,7 +25,6 @@ tasks.test {
 tasks.withType<Test> {
     jvmArgs = listOf(
         "--enable-preview",
-        "-XX:+ShowCodeDetailsInExceptionMessages"
     )
 }
 
