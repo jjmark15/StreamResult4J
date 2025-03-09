@@ -1,6 +1,6 @@
-package chaoticgoose.uk.streamresult;
+package uk.chaoticgoose.streamresult;
 
-import chaoticgoose.uk.streamresult.LambdaExceptionUtils.FunctionWithException;
+import uk.chaoticgoose.streamresult.LambdaExceptionUtils.FunctionWithException;
 
 import java.util.function.Function;
 import java.util.stream.Gatherer;

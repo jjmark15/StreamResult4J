@@ -2,7 +2,7 @@ plugins {
     id("java")
 }
 
-group = "chaoticgoose.uk"
+group = "uk.chaoticgoose"
 version = "1.0-SNAPSHOT"
 
 repositories {

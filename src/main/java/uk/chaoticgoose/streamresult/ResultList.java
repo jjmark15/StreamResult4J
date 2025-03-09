@@ -1,4 +1,4 @@
-package chaoticgoose.uk.streamresult;
+package uk.chaoticgoose.streamresult;
 
 import java.util.List;
 import java.util.Optional;

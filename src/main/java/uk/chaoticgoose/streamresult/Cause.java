@@ -1,4 +1,4 @@
-package chaoticgoose.uk.streamresult;
+package uk.chaoticgoose.streamresult;
 
 public sealed interface Cause {
     record Single<E extends Exception>(E cause) implements Cause {
