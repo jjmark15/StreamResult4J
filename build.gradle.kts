@@ -34,4 +34,6 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(23)
     }
+    sourceCompatibility = JavaVersion.VERSION_23
+    targetCompatibility = JavaVersion.VERSION_23
 }
