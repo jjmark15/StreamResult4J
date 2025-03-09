@@ -1,6 +1,7 @@
 package uk.chaoticgoose.streamresult;
 
 import uk.chaoticgoose.streamresult.LambdaExceptionUtils.FunctionWithException;
+import uk.chaoticgoose.streamresult.Result.Failure;
 
 import java.util.function.Function;
 import java.util.stream.Gatherer;
@@ -30,27 +31,27 @@ public final class ResultGatherers {
     }
 
     public static <T, R, E1 extends Exception, E2 extends Exception> Gatherer<Result<T, Cause.Single<E1>>, ?, Result<R, Cause.Double<E1, E2>>> mapFallible2(FunctionWithException<T, R, E2> mapper, boolean continueAfterFailure) {
-        return mapWhileSuccessUpgrade(mapper, Cause.Double::fromSingle, Cause.Double::ofSecond, continueAfterFailure);
+        return mapFallibleN(mapper, Cause.Double::fromSingle, Cause.Double::ofSecond, continueAfterFailure);
     }
 
     public static <T, R, E1 extends Exception, E2 extends Exception, E3 extends Exception> Gatherer<Result<T, Cause.Double<E1, E2>>, ?, Result<R, Cause.Triple<E1, E2, E3>>> mapFallible3(FunctionWithException<T, R, E3> mapper, boolean continueAfterFailure) {
-        return mapWhileSuccessUpgrade(mapper, Cause.Triple::fromDouble, Cause.Triple::ofThird, continueAfterFailure);
+        return mapFallibleN(mapper, Cause.Triple::fromDouble, Cause.Triple::ofThird, continueAfterFailure);
     }
 
-    private static <T, R, E extends Exception, C1 extends Cause, C2 extends Cause> Gatherer<Result<T, C1>, ?, Result<R, C2>> mapWhileSuccessUpgrade(FunctionWithException<T, R, E> mapper, Function<C1, C2> causeUpgrade, Function<E, C2> causeFactory, boolean continueAfterFailure) {
+    private static <T, R, E extends Exception, C1 extends Cause, C2 extends Cause> Gatherer<Result<T, C1>, ?, Result<R, C2>> mapFallibleN(FunctionWithException<T, R, E> mapper, Function<C1, C2> causeUpgrade, Function<E, C2> causeFactory, boolean continueAfterFailure) {
         class State {
             private boolean hasFailed = false;
         }
 
-        return Gatherer.ofSequential(State::new, (state, element, downstream) -> {
-            if (element.isFailure()) {
-                return downstream.push(new Result.Failure<>(causeUpgrade.apply(element.causeOrThrow())));
+        return Gatherer.ofSequential(State::new, (state, previousResult, downstream) -> {
+            if (previousResult.isFailure()) {
+                return downstream.push(new Failure<>(causeUpgrade.apply(previousResult.causeOrThrow())));
             }
 
             if (state.hasFailed && !continueAfterFailure) {
                 return false;
             }
-            Result<R, C2> result = Result.catching(() -> mapper.apply(element.valueOrThrow()), causeFactory);
+            Result<R, C2> result = Result.catching(() -> mapper.apply(previousResult.valueOrThrow()), causeFactory);
 
             if (result.isFailure()) {
                 state.hasFailed = true;
