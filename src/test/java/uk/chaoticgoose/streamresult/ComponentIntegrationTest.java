@@ -44,17 +44,18 @@ public class ComponentIntegrationTest {
 
     @Test
     void throwsEachExceptionCause() {
-        StreamResult<List<Integer>, Cause.Double<SomeException, OtherException>> result = Stream.of(-1, 0)
+        StreamResult<List<Integer>, Cause.Triple<SomeException, OtherException, YetAnotherException>> result = Stream.of(-1, 0, 1)
             .gather(mapFallible(this::throwsIfLessThanZero, Continue))
             .gather(mapFallible2(this::throwsIfLessThanOne, Continue))
+            .gather(mapFallible3(this::throwsIfEqualToOne, Continue))
             .collect(toSingleResult());
 
         try {
             switch (result) {
-                case Failure<?, Cause.Double<SomeException, OtherException>> failure -> failure.cause().throwExceptions();
+                case Failure<?, Cause.Triple<SomeException, OtherException, YetAnotherException>> failure -> failure.cause().throwExceptions();
                 case Success<List<Integer>, ?> _ -> throw new RuntimeException();
             }
-        } catch (OtherException | SomeException e) {
+        } catch (OtherException | SomeException | YetAnotherException e) {
             // got here
             return;
         }
@@ -75,7 +76,16 @@ public class ComponentIntegrationTest {
         return i;
     }
 
+    private Integer throwsIfEqualToOne(Integer i) throws YetAnotherException {
+        if (i == 1) {
+            throw new YetAnotherException();
+        }
+        return i;
+    }
+
     private static class SomeException extends Exception {}
 
     private static class OtherException extends Exception {}
+
+    private static class YetAnotherException extends Exception {}
 }
