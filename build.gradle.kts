@@ -29,3 +29,9 @@ tasks.withType<JavaCompile> {
     options.compilerArgs.add("--enable-preview")
     options.release.set(23)
 }
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(23)
+    }
+}
