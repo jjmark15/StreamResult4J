@@ -1,12 +1,14 @@
 package uk.chaoticgoose.streamresult;
 
 import org.junit.jupiter.api.Test;
+import uk.chaoticgoose.streamresult.StreamResult.Failure;
 import uk.chaoticgoose.streamresult.StreamResult.Success;
 
+import java.rmi.server.RemoteRef;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 import static uk.chaoticgoose.streamresult.ResultCollectors.toResultList;
 import static uk.chaoticgoose.streamresult.ResultCollectors.toSingleResult;
 import static uk.chaoticgoose.streamresult.ResultGatherers.*;
@@ -38,6 +40,25 @@ public class ComponentIntegrationTest {
             .extracting(Cause.Double::exception)
             .usingRecursiveFieldByFieldElementComparator()
             .containsExactly(new SomeException(), new OtherException());
+    }
+
+    @Test
+    void throwsEachExceptionCause() {
+        StreamResult<List<Integer>, Cause.Double<SomeException, OtherException>> result = Stream.of(-1, 0)
+            .gather(mapFallible(this::throwsIfLessThanZero, Continue))
+            .gather(mapFallible2(this::throwsIfLessThanOne, Continue))
+            .collect(toSingleResult());
+
+        try {
+            switch (result) {
+                case Failure<?, Cause.Double<SomeException, OtherException>> failure -> failure.cause().throwExceptions();
+                case Success<List<Integer>, ?> _ -> throw new RuntimeException();
+            }
+        } catch (OtherException | SomeException e) {
+            // got here
+            return;
+        }
+        fail("Should have thrown an exception");
     }
 
     private Integer throwsIfLessThanZero(Integer i) throws SomeException {
