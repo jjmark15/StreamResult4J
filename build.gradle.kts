@@ -17,3 +17,15 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
+tasks.withType<Test> {
+    jvmArgs = listOf(
+        "--enable-preview",
+        "-XX:+ShowCodeDetailsInExceptionMessages"
+    )
+}
+
+tasks.withType<JavaCompile> {
+    options.compilerArgs.add("--enable-preview")
+    options.release.set(23)
+}
