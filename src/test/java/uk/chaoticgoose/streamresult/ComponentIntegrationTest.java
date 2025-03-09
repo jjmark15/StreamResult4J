@@ -10,13 +10,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.chaoticgoose.streamresult.ResultCollectors.toResultList;
 import static uk.chaoticgoose.streamresult.ResultCollectors.toSingleResult;
 import static uk.chaoticgoose.streamresult.ResultGatherers.*;
+import static uk.chaoticgoose.streamresult.ResultGatherers.FailureAction.Continue;
+import static uk.chaoticgoose.streamresult.ResultGatherers.FailureAction.Stop;
 
 @SuppressWarnings("preview")
 public class ComponentIntegrationTest {
     @Test
     void mapsSuccessesWithFallibleOperation() {
         StreamResult<List<Integer>, Cause.Single<SomeException>> result = Stream.of(0, 1, 2)
-            .gather(mapFallible(this::throwsIfLessThanZero, false))
+            .gather(mapFallible(this::throwsIfLessThanZero, Stop))
             .gather(mapSuccesses(n -> n - 4))
             .collect(toSingleResult());
 
@@ -27,8 +29,8 @@ public class ComponentIntegrationTest {
     @Test
     void mapsFailuresAndSuccessesWithMultipleFallibleOperations() {
         ResultList<Integer, Cause.Double<SomeException, OtherException>> results = Stream.of(-1, 0, 1)
-            .gather(mapFallible(this::throwsIfLessThanZero, true))
-            .gather(mapFallible2(this::throwsIfLessThanOne, true))
+            .gather(mapFallible(this::throwsIfLessThanZero, Continue))
+            .gather(mapFallible2(this::throwsIfLessThanOne, Continue))
             .collect(toResultList());
 
         assertThat(results.successValues()).containsExactly(1);
