@@ -23,7 +23,7 @@ public final class ResultList<T, C extends Cause> {
     }
 
     private Result.Success<List<T>, C> successList() {
-        return new Result.Success<>(results.stream().map(s -> s.successOrThrow().value()).toList());
+        return new Result.Success<>(results.stream().map(Result::valueOrThrow).toList());
     }
 
     private static <T, C extends Cause> Result<List<T>, C> adapt(Result.Failure<T, C> f) {

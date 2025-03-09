@@ -44,14 +44,13 @@ public final class ResultGatherers {
 
         return Gatherer.ofSequential(State::new, (state, element, downstream) -> {
             if (element.isFailure()) {
-                return downstream.push(new Result.Failure<>(causeUpgrade.apply(element.failureOrThrow().cause())));
+                return downstream.push(new Result.Failure<>(causeUpgrade.apply(element.causeOrThrow())));
             }
 
             if (state.hasFailed && !continueAfterFailure) {
                 return false;
             }
-            Result.Success<T, C1> success = element.successOrThrow();
-            Result<R, C2> result = Result.catching(() -> mapper.apply(success.value()), causeFactory);
+            Result<R, C2> result = Result.catching(() -> mapper.apply(element.valueOrThrow()), causeFactory);
 
             if (result.isFailure()) {
                 state.hasFailed = true;

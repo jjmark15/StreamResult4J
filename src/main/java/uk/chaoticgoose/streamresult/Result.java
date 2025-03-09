@@ -14,15 +14,32 @@ public sealed interface Result<V, C extends Cause> {
     }
 
     default Success<V, C> successOrThrow() {
-        throw new IllegalStateException("Result is not a Success");
+        return switch (this) {
+            case Success<V, C> success -> success;
+            case Failure<?, ?> _ -> throw new IllegalStateException("Result is not a Success");
+        };
+    }
+
+    default V valueOrThrow() {
+        return successOrThrow().value();
     }
 
     default Failure<V, C> failureOrThrow() {
-        throw new IllegalStateException("Result is not a Failure");
+        return switch (this) {
+            case Success<?, ?> _ -> throw new IllegalStateException("Result is not a Failure");
+            case Failure<V, C> failure -> failure;
+        };
+    }
+
+    default C causeOrThrow() {
+        return failureOrThrow().cause();
     }
 
     default boolean isFailure() {
-        return false;
+        return switch (this) {
+            case Success<?, ?> _ -> false;
+            case Failure<?, ?> _ -> true;
+        };
     }
 
     default <T> Result<T, C> mapSuccess(Function<V, T> mapper) {
@@ -33,22 +50,9 @@ public sealed interface Result<V, C extends Cause> {
     }
 
     record Success<S, C extends Cause>(S value) implements Result<S, C> {
-        @Override
-        public Success<S, C> successOrThrow() {
-            return this;
-        }
     }
 
     record Failure<S, C extends Cause>(C cause) implements Result<S, C> {
-        @Override
-        public Failure<S, C> failureOrThrow() {
-            return this;
-        }
-
-        @Override
-        public boolean isFailure() {
-            return true;
-        }
     }
 
     @SuppressWarnings("unchecked")
