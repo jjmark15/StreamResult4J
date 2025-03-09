@@ -28,7 +28,7 @@ public final class ResultList<T, C extends Cause> {
     }
 
     private StreamResult.Success<List<T>, C> successes() {
-        return new StreamResult.Success<>(results.stream().filter(not(StreamResult::isFailure)).map(StreamResult::valueOrThrow).toList());
+        return new StreamResult.Success<>(results.stream().filter(StreamResult::isSuccess).map(StreamResult::valueOrThrow).toList());
     }
 
     public List<T> successValues() {

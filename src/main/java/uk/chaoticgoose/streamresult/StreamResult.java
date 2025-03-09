@@ -49,6 +49,10 @@ public sealed interface StreamResult<V, C extends Cause> {
         };
     }
 
+    default boolean isSuccess() {
+        return !isFailure();
+    }
+
     default <T> StreamResult<T, C> mapSuccess(Function<V, T> mapper) {
         return switch (this) {
             case Success<V, C> success -> new Success<>(mapper.apply(success.value));

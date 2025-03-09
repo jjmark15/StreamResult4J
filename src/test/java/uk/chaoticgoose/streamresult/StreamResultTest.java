@@ -32,6 +32,16 @@ class StreamResultTest {
     }
 
     @Test
+    void successIsASuccess() {
+        assertThat(SUCCESS.isSuccess()).isTrue();
+    }
+
+    @Test
+    void failureIsNotASuccess() {
+        assertThat(new Failure<>(new Cause.Single<>(new Exception())).isSuccess()).isFalse();
+    }
+
+    @Test
     void failureIsAFailure() {
         assertThat(new Failure<>(new Cause.Single<>(new Exception())).isFailure()).isTrue();
     }
