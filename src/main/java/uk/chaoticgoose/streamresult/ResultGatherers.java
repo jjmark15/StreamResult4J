@@ -62,13 +62,6 @@ public final class ResultGatherers {
     }
 
     public static <T, R, C extends Cause> Gatherer<Result<T, C>, ?, Result<R, C>> mapSuccesses(Function<T, R> mapper) {
-        return Gatherer.ofSequential((_, result, downstream) -> {
-            if (result.isFailure()) {
-                Result.Failure<R, C> mappedFailure = new Result.Failure<>(result.failureOrThrow().cause());
-                return downstream.push(mappedFailure);
-            }
-
-            return downstream.push(new Result.Success<>(mapper.apply(result.successOrThrow().value())));
-        });
+        return Gatherer.ofSequential((_, result, downstream) -> downstream.push(result.mapSuccess(mapper)));
     }
 }

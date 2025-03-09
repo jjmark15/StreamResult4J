@@ -25,6 +25,13 @@ public sealed interface Result<S, F extends Cause> {
         return false;
     }
 
+    default <T> Result<T, F> mapSuccess(Function<S, T> mapper) {
+        return switch (this) {
+            case Success<S, F> success -> new Success<>(mapper.apply(success.value));
+            case Result.Failure<S, F> failure -> new Failure<>(failure.cause);
+        };
+    }
+
     record Success<S, C extends Cause>(S value) implements Result<S, C> {
         @Override
         public Success<S, C> successOrThrow() {
