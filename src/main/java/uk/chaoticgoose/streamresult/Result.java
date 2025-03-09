@@ -4,7 +4,7 @@ import uk.chaoticgoose.streamresult.LambdaExceptionUtils.SupplierWithException;
 
 import java.util.function.Function;
 
-public sealed interface Result<S, F extends Cause> {
+public sealed interface Result<V, C extends Cause> {
     static <T, E extends Exception, C extends Cause> Result<T, C> catching(SupplierWithException<T, E> supplier, Function<E, C> causeFunction) {
         try {
             return new Success<>(supplier.get());
@@ -13,11 +13,11 @@ public sealed interface Result<S, F extends Cause> {
         }
     }
 
-    default Success<S, F> successOrThrow() {
+    default Success<V, C> successOrThrow() {
         throw new IllegalStateException("Result is not a Success");
     }
 
-    default Failure<S, F> failureOrThrow() {
+    default Failure<V, C> failureOrThrow() {
         throw new IllegalStateException("Result is not a Failure");
     }
 
@@ -25,10 +25,10 @@ public sealed interface Result<S, F extends Cause> {
         return false;
     }
 
-    default <T> Result<T, F> mapSuccess(Function<S, T> mapper) {
+    default <T> Result<T, C> mapSuccess(Function<V, T> mapper) {
         return switch (this) {
-            case Success<S, F> success -> new Success<>(mapper.apply(success.value));
-            case Result.Failure<S, F> failure -> new Failure<>(failure.cause);
+            case Success<V, C> success -> new Success<>(mapper.apply(success.value));
+            case Result.Failure<V, C> failure -> new Failure<>(failure.cause);
         };
     }
 
