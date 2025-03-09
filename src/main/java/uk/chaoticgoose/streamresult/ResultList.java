@@ -19,7 +19,10 @@ public final class ResultList<T, C extends Cause> {
     }
 
     private Optional<Result.Failure<T, C>> anyFailureResult() {
-        return results.stream().filter(Result::isFailure).map(Result::failureOrThrow).findAny();
+        return results.stream().filter(Result::isFailure).map(result -> switch (result) {
+            case Result.Success<?, ?> _ -> throw new IllegalStateException("Result is not a Failure");
+            case Result.Failure<T, C> failure -> failure;
+        }).findAny();
     }
 
     private Result.Success<List<T>, C> successList() {

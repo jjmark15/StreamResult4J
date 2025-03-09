@@ -13,26 +13,18 @@ public sealed interface Result<V, C extends Cause> {
         }
     }
 
-    default Success<V, C> successOrThrow() {
-        return switch (this) {
-            case Success<V, C> success -> success;
-            case Failure<?, ?> _ -> throw new IllegalStateException("Result is not a Success");
-        };
-    }
-
     default V valueOrThrow() {
-        return successOrThrow().value();
-    }
-
-    default Failure<V, C> failureOrThrow() {
-        return switch (this) {
-            case Success<?, ?> _ -> throw new IllegalStateException("Result is not a Failure");
-            case Failure<V, C> failure -> failure;
-        };
+        return (switch (this) {
+            case Result.Success<V, C> success -> success;
+            case Result.Failure<?, ?> _ -> throw new IllegalStateException("Result is not a Success");
+        }).value();
     }
 
     default C causeOrThrow() {
-        return failureOrThrow().cause();
+        return (switch (this) {
+            case Result.Success<?, ?> _ -> throw new IllegalStateException("Result is not a Failure");
+            case Result.Failure<V, C> failure -> failure;
+        }).cause();
     }
 
     default boolean isFailure() {
