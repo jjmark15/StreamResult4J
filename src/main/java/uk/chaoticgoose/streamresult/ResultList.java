@@ -2,6 +2,9 @@ package uk.chaoticgoose.streamresult;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
+
+import static java.util.function.Predicate.not;
 
 public final class ResultList<T, C extends Cause> {
     private final List<Result<T, C>> results;
@@ -15,7 +18,7 @@ public final class ResultList<T, C extends Cause> {
     }
 
     public Result<List<T>, C> toSingleResult() {
-        return anyFailureResult().map(ResultList::adapt).orElseGet(this::successList);
+        return anyFailureResult().map(ResultList::adapt).orElseGet(this::successes);
     }
 
     private Optional<Result.Failure<T, C>> anyFailureResult() {
@@ -25,8 +28,16 @@ public final class ResultList<T, C extends Cause> {
         }).findAny();
     }
 
-    private Result.Success<List<T>, C> successList() {
-        return new Result.Success<>(results.stream().map(Result::valueOrThrow).toList());
+    private Result.Success<List<T>, C> successes() {
+        return new Result.Success<>(results.stream().filter(not(Result::isFailure)).map(Result::valueOrThrow).toList());
+    }
+
+    public List<T> successValues() {
+        return successes().value();
+    }
+
+    public List<C> failureCauses() {
+        return results.stream().filter(Result::isFailure).map(Result::causeOrThrow).toList();
     }
 
     private static <T, C extends Cause> Result<List<T>, C> adapt(Result.Failure<T, C> f) {

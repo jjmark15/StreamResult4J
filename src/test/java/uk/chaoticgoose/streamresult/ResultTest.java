@@ -19,7 +19,7 @@ class ResultTest {
     @SuppressWarnings("unchecked")
     private static final Function<Exception, Cause> mockCauseFunction = mock(Function.class);
     private static final Success<String, Cause> SUCCESS = new Success<>(VALUE);
-    private static final Failure<?, Cause> FAILURE = new Failure<>(SINGLE_CAUSE);
+    private static final Failure<String, Cause> FAILURE = new Failure<>(SINGLE_CAUSE);
 
     @BeforeEach
     void setUp() {
@@ -34,6 +34,26 @@ class ResultTest {
     @Test
     void failureIsAFailure() {
         assertThat(new Failure<>(new Cause.Single<>(new Exception())).isFailure()).isTrue();
+    }
+
+    @Test
+    void success_returnsSuccessWhenSuccess() {
+        assertThat(SUCCESS.success()).hasValue(SUCCESS);
+    }
+
+    @Test
+    void success_returnsEmptyWhenNotSuccess() {
+        assertThat(FAILURE.success()).isEmpty();
+    }
+
+    @Test
+    void failure_returnsFailureWhenFailure() {
+        assertThat(FAILURE.failure()).hasValue(FAILURE);
+    }
+
+    @Test
+    void failure_returnsEmptyWhenNotFailure() {
+        assertThat(SUCCESS.failure()).isEmpty();
     }
 
     @Test

@@ -8,7 +8,7 @@ class CauseTest {
 
     @Test
     void singleCauseThrowsException() {
-        Exception1 exception = new Exception1();
+        var exception = new Exception1();
         try {
             Cause.Single<Exception1> cause = Cause.Single.of(exception);
             cause.throwException();
@@ -19,8 +19,14 @@ class CauseTest {
     }
 
     @Test
+    void singleCauseReturnsException() {
+        var exception = new Exception1();
+        assertThat(Cause.Single.of(exception).exception()).isEqualTo(exception);
+    }
+
+    @Test
     void doubleCauseThrowsException1() {
-        Exception1 exception = new Exception1();
+        var exception = new Exception1();
         try {
             Cause.Double<Exception1, Exception2> cause = Cause.Double.fromSingle(Cause.Single.of(exception));
             cause.throwExceptions();
@@ -31,8 +37,14 @@ class CauseTest {
     }
 
     @Test
+    void doubleCauseReturnsException1() {
+        var exception = new Exception1();
+        assertThat(Cause.Double.fromSingle(Cause.Single.of(exception)).exception()).isEqualTo(exception);
+    }
+
+    @Test
     void doubleCauseThrowsException2() {
-        Exception2 exception = new Exception2();
+        var exception = new Exception2();
         try {
             Cause.Double<Exception1, Exception2> cause = Cause.Double.ofSecond(exception);
             cause.throwExceptions();
@@ -43,8 +55,14 @@ class CauseTest {
     }
 
     @Test
+    void doubleCauseReturnsException2() {
+        var exception = new Exception2();
+        assertThat(Cause.Double.ofSecond(exception).exception()).isEqualTo(exception);
+    }
+
+    @Test
     void tripleCauseThrowsException1() {
-        Exception1 exception = new Exception1();
+        var exception = new Exception1();
         try {
             Cause.Triple<Exception1, Exception2, Exception3> cause = Cause.Triple.fromDouble(Cause.Double.fromSingle(Cause.Single.of(exception)));
             cause.throwExceptions();
@@ -55,8 +73,14 @@ class CauseTest {
     }
 
     @Test
+    void tripleCauseReturnsException1() {
+        var exception = new Exception1();
+        assertThat(Cause.Triple.fromDouble(Cause.Double.fromSingle(Cause.Single.of(exception))).exception()).isEqualTo(exception);
+    }
+
+    @Test
     void tripleCauseThrowsException2() {
-        Exception2 exception = new Exception2();
+        var exception = new Exception2();
         try {
             Cause.Triple<Exception1, Exception2, Exception3> cause = Cause.Triple.fromDouble(Cause.Double.ofSecond(exception));
             cause.throwExceptions();
@@ -64,6 +88,12 @@ class CauseTest {
         } catch (Exception1 | Exception2 | Exception3 e) {
             assertThat(e).isEqualTo(exception);
         }
+    }
+
+    @Test
+    void tripleCauseReturnsException2() {
+        var exception = new Exception2();
+        assertThat(Cause.Triple.fromDouble(Cause.Double.ofSecond(exception)).exception()).isEqualTo(exception);
     }
 
     @Test
@@ -76,6 +106,12 @@ class CauseTest {
         } catch (Exception1 | Exception2 | Exception3 e) {
             assertThat(e).isEqualTo(exception);
         }
+    }
+
+    @Test
+    void tripleCauseReturnsException3() {
+        var exception = new Exception3();
+        assertThat(Cause.Triple.ofThird(exception).exception()).isEqualTo(exception);
     }
 
     private static class Exception1 extends Exception {}

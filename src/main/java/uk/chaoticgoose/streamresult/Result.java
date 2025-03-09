@@ -2,6 +2,7 @@ package uk.chaoticgoose.streamresult;
 
 import uk.chaoticgoose.streamresult.LambdaExceptionUtils.SupplierWithException;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 public sealed interface Result<V, C extends Cause> {
@@ -11,6 +12,20 @@ public sealed interface Result<V, C extends Cause> {
         } catch (Exception e) {
             return new Failure<>(causeFunction.apply(safeCast(e)));
         }
+    }
+
+    default Optional<Success<V, C>> success() {
+        return switch (this) {
+            case Result.Failure<?, ?> _ -> Optional.empty();
+            case Result.Success<V, C> success -> Optional.of(success);
+        };
+    }
+
+    default Optional<Failure<V, C>> failure() {
+        return switch (this) {
+            case Result.Failure<V, C> failure -> Optional.of(failure);
+            case Result.Success<?, ?> _ -> Optional.empty();
+        };
     }
 
     default V valueOrThrow() {
