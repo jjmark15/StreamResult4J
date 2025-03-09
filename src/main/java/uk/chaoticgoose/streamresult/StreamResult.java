@@ -5,8 +5,8 @@ import uk.chaoticgoose.streamresult.LambdaExceptionUtils.SupplierWithException;
 import java.util.Optional;
 import java.util.function.Function;
 
-public sealed interface Result<V, C extends Cause> {
-    static <T, E extends Exception, C extends Cause> Result<T, C> catching(SupplierWithException<T, E> supplier, Function<E, C> causeFunction) {
+public sealed interface StreamResult<V, C extends Cause> {
+    static <T, E extends Exception, C extends Cause> StreamResult<T, C> catching(SupplierWithException<T, E> supplier, Function<E, C> causeFunction) {
         try {
             return new Success<>(supplier.get());
         } catch (Exception e) {
@@ -16,29 +16,29 @@ public sealed interface Result<V, C extends Cause> {
 
     default Optional<Success<V, C>> success() {
         return switch (this) {
-            case Result.Failure<?, ?> _ -> Optional.empty();
-            case Result.Success<V, C> success -> Optional.of(success);
+            case StreamResult.Failure<?, ?> _ -> Optional.empty();
+            case StreamResult.Success<V, C> success -> Optional.of(success);
         };
     }
 
     default Optional<Failure<V, C>> failure() {
         return switch (this) {
-            case Result.Failure<V, C> failure -> Optional.of(failure);
-            case Result.Success<?, ?> _ -> Optional.empty();
+            case StreamResult.Failure<V, C> failure -> Optional.of(failure);
+            case StreamResult.Success<?, ?> _ -> Optional.empty();
         };
     }
 
     default V valueOrThrow() {
         return (switch (this) {
-            case Result.Success<V, C> success -> success;
-            case Result.Failure<?, ?> _ -> throw new IllegalStateException("Result is not a Success");
+            case StreamResult.Success<V, C> success -> success;
+            case StreamResult.Failure<?, ?> _ -> throw new IllegalStateException("Result is not a Success");
         }).value();
     }
 
     default C causeOrThrow() {
         return (switch (this) {
-            case Result.Success<?, ?> _ -> throw new IllegalStateException("Result is not a Failure");
-            case Result.Failure<V, C> failure -> failure;
+            case StreamResult.Success<?, ?> _ -> throw new IllegalStateException("Result is not a Failure");
+            case StreamResult.Failure<V, C> failure -> failure;
         }).cause();
     }
 
@@ -49,17 +49,17 @@ public sealed interface Result<V, C extends Cause> {
         };
     }
 
-    default <T> Result<T, C> mapSuccess(Function<V, T> mapper) {
+    default <T> StreamResult<T, C> mapSuccess(Function<V, T> mapper) {
         return switch (this) {
             case Success<V, C> success -> new Success<>(mapper.apply(success.value));
-            case Result.Failure<V, C> failure -> new Failure<>(failure.cause);
+            case StreamResult.Failure<V, C> failure -> new Failure<>(failure.cause);
         };
     }
 
-    record Success<S, C extends Cause>(S value) implements Result<S, C> {
+    record Success<S, C extends Cause>(S value) implements StreamResult<S, C> {
     }
 
-    record Failure<S, C extends Cause>(C cause) implements Result<S, C> {
+    record Failure<S, C extends Cause>(C cause) implements StreamResult<S, C> {
     }
 
     @SuppressWarnings("unchecked")

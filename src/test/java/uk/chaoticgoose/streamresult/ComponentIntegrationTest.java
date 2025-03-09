@@ -1,7 +1,7 @@
 package uk.chaoticgoose.streamresult;
 
 import org.junit.jupiter.api.Test;
-import uk.chaoticgoose.streamresult.Result.Success;
+import uk.chaoticgoose.streamresult.StreamResult.Success;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -15,7 +15,7 @@ import static uk.chaoticgoose.streamresult.ResultGatherers.*;
 public class ComponentIntegrationTest {
     @Test
     void mapsSuccessesWithFallibleOperation() {
-        Result<List<Integer>, Cause.Single<SomeException>> result = Stream.of(0, 1, 2)
+        StreamResult<List<Integer>, Cause.Single<SomeException>> result = Stream.of(0, 1, 2)
             .gather(mapFallible(this::throwsIfLessThanZero, false))
             .gather(mapSuccesses(n -> n - 4))
             .collect(toSingleResult());

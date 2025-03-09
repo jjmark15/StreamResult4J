@@ -2,8 +2,8 @@ package uk.chaoticgoose.streamresult;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.chaoticgoose.streamresult.Result.Failure;
-import uk.chaoticgoose.streamresult.Result.Success;
+import uk.chaoticgoose.streamresult.StreamResult.Failure;
+import uk.chaoticgoose.streamresult.StreamResult.Success;
 
 import java.util.function.Function;
 
@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ResultTest {
+class StreamResultTest {
     private static final String VALUE = "value";
     private static final SomeException EXCEPTION = new SomeException();
     private static final Cause SINGLE_CAUSE = Cause.Single.of(EXCEPTION);
@@ -83,12 +83,12 @@ class ResultTest {
 
     @Test
     void wrapsValueInResult() {
-        assertThat(Result.catching(() -> methodThatCanThrow(VALUE), mockCauseFunction)).isEqualTo(SUCCESS);
+        assertThat(StreamResult.catching(() -> methodThatCanThrow(VALUE), mockCauseFunction)).isEqualTo(SUCCESS);
     }
 
     @Test
     void wrapsThrownExceptionInResult() {
-        assertThat(Result.catching(() -> methodThatThrows(VALUE), mockCauseFunction)).isEqualTo(FAILURE);
+        assertThat(StreamResult.catching(() -> methodThatThrows(VALUE), mockCauseFunction)).isEqualTo(FAILURE);
     }
 
     private static String methodThatCanThrow(String string) throws SomeException {
