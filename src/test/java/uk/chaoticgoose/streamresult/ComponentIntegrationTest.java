@@ -15,7 +15,6 @@ import static uk.chaoticgoose.streamresult.ResultGatherers.*;
 import static uk.chaoticgoose.streamresult.ResultGatherers.FailureAction.Continue;
 import static uk.chaoticgoose.streamresult.ResultGatherers.FailureAction.Stop;
 
-@SuppressWarnings("preview")
 public class ComponentIntegrationTest {
     @Test
     void mapsSuccessesWithFallibleOperation() {
