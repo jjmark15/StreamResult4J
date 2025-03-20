@@ -22,21 +22,14 @@ tasks.test {
     useJUnitPlatform()
 }
 
-tasks.withType<Test> {
-    jvmArgs = listOf(
-        "--enable-preview",
-    )
-}
-
 tasks.withType<JavaCompile> {
-    options.compilerArgs.add("--enable-preview")
-    options.release.set(23)
+    options.release.set(24)
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(23)
+        languageVersion = JavaLanguageVersion.of(24)
     }
-    sourceCompatibility = JavaVersion.VERSION_23
-    targetCompatibility = JavaVersion.VERSION_23
+    sourceCompatibility = JavaVersion.VERSION_24
+    targetCompatibility = JavaVersion.VERSION_24
 }
