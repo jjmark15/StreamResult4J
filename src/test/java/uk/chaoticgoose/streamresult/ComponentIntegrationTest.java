@@ -28,6 +28,36 @@ public class ComponentIntegrationTest {
     }
 
     @Test
+    void doesNotProcessAnyMoreStreamElementsInMapFallibleIfFailureActionIsStop() {
+        ResultList<Integer, Cause.Single<SomeException>> result = Stream.of(1, 0, -1, -2)
+            .gather(mapFallible(this::throwsIfLessThanZero, Stop))
+            .gather(mapSuccesses(n -> {
+                if (n < 0) {
+                    throw new RuntimeException();
+                }
+                return n;
+            }))
+            .collect(toResultList());
+
+        assertThat(result.successValues()).containsExactly(1, 0);
+    }
+
+    @Test
+    void continuesProcessingStreamElementsInMapFallibleIfFailureActionIsContinue() {
+        ResultList<Integer, Cause.Single<SomeException>> result = Stream.of(1, 0, -1, 2)
+            .gather(mapFallible(this::throwsIfLessThanZero, Continue))
+            .gather(mapSuccesses(n -> {
+                if (n < 0) {
+                    throw new RuntimeException();
+                }
+                return n;
+            }))
+            .collect(toResultList());
+
+        assertThat(result.successValues()).containsExactly(1, 0, 2);
+    }
+
+    @Test
     void mapsFailuresAndSuccessesWithMultipleFallibleOperations() {
         ResultList<Integer, Cause.Double<SomeException, OtherException>> results = Stream.of(-1, 0, 1)
             .gather(mapFallible(this::throwsIfLessThanZero, Continue))
