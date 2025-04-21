@@ -6,7 +6,6 @@ import uk.chaoticgoose.streamresult.StreamResult.Failure;
 import java.util.function.Function;
 import java.util.stream.Gatherer;
 
-@SuppressWarnings("preview")
 public final class ResultGatherers {
     private ResultGatherers() {
     }
