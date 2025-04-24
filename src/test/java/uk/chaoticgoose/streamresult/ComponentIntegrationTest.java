@@ -91,6 +91,19 @@ public class ComponentIntegrationTest {
         fail("Should have thrown an exception");
     }
 
+    @Test
+    void mapsSuccessesWithFallibleOperation_mapper() {
+        StreamResult<List<Integer>, Cause.Triple<SomeException, OtherException, YetAnotherException>> result = Stream.of(0, 1, 2)
+            .map(ResultMappers.mapFallible(this::throwsIfLessThanZero))
+            .map(ResultMappers.mapFallible2(this::throwsIfLessThanOne))
+            .map(ResultMappers.mapFallible3(this::throwsIfEqualToOne))
+            .map(ResultMappers.mapSuccesses(i -> i + 1))
+            .collect(toSingleResult());
+
+        assertThat(result).isInstanceOf(Success.class);
+        assertThat(result.success().map(Success::value)).hasValue(List.of(-4, -3, -2));
+    }
+
     private Integer throwsIfLessThanZero(Integer i) throws SomeException {
         if (i < 0) {
             throw new SomeException();
