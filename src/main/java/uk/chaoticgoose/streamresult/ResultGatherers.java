@@ -1,17 +1,20 @@
 package uk.chaoticgoose.streamresult;
 
+import org.jspecify.annotations.NullMarked;
 import uk.chaoticgoose.streamresult.LambdaExceptionUtils.FunctionWithException;
 import uk.chaoticgoose.streamresult.StreamResult.Failure;
 
 import java.util.function.Function;
 import java.util.stream.Gatherer;
 
+@NullMarked
 public final class ResultGatherers {
     private ResultGatherers() {
     }
 
     public static <T, R, E extends Exception>
     Gatherer<T, ?, StreamResult<R, Cause.Single<E>>> mapFallible(FunctionWithException<T, R, E> mapper, FailureAction failureAction) {
+        @NullMarked
         class State {
             private boolean hasFailed = false;
         }
@@ -53,6 +56,7 @@ public final class ResultGatherers {
         Function<E, C2> causeFactory,
         FailureAction failureAction
     ) {
+        @NullMarked
         class State {
             private boolean hasFailed = false;
         }
@@ -79,6 +83,7 @@ public final class ResultGatherers {
         return Gatherer.ofSequential((_, result, downstream) -> downstream.push(result.mapSuccess(mapper)));
     }
 
+    @NullMarked
     public enum FailureAction {
         Stop, Continue
     }

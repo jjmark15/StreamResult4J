@@ -1,11 +1,14 @@
 package uk.chaoticgoose.streamresult;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.util.List;
 import java.util.stream.Collector;
 
 import static java.util.stream.Collectors.collectingAndThen;
 import static java.util.stream.Collectors.toList;
 
+@NullMarked
 public final class ResultCollectors {
     private ResultCollectors() {}
 

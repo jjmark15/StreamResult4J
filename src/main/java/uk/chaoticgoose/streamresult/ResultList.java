@@ -1,10 +1,11 @@
 package uk.chaoticgoose.streamresult;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.util.List;
 import java.util.Optional;
 
-import static java.util.function.Predicate.not;
-
+@NullMarked
 public final class ResultList<T, C extends Cause> {
     private final List<StreamResult<T, C>> results;
 

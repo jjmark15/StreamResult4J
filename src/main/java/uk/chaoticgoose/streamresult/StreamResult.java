@@ -1,10 +1,12 @@
 package uk.chaoticgoose.streamresult;
 
+import org.jspecify.annotations.NullMarked;
 import uk.chaoticgoose.streamresult.LambdaExceptionUtils.SupplierWithException;
 
 import java.util.Optional;
 import java.util.function.Function;
 
+@NullMarked
 public sealed interface StreamResult<V, C extends Cause> {
     static <T, E extends Exception, C extends Cause> StreamResult<T, C> catching(SupplierWithException<T, E> supplier, Function<E, C> causeFunction) {
         try {
@@ -60,9 +62,11 @@ public sealed interface StreamResult<V, C extends Cause> {
         };
     }
 
+    @NullMarked
     record Success<S, C extends Cause>(S value) implements StreamResult<S, C> {
     }
 
+    @NullMarked
     record Failure<S, C extends Cause>(C cause) implements StreamResult<S, C> {
     }
 

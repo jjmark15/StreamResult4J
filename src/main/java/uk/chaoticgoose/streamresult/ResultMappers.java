@@ -1,5 +1,6 @@
 package uk.chaoticgoose.streamresult;
 
+import org.jspecify.annotations.NullMarked;
 import uk.chaoticgoose.streamresult.Cause.Double;
 import uk.chaoticgoose.streamresult.LambdaExceptionUtils.FunctionWithException;
 
@@ -9,6 +10,7 @@ import static uk.chaoticgoose.streamresult.Cause.Double.*;
 import static uk.chaoticgoose.streamresult.Cause.Triple.fromDouble;
 import static uk.chaoticgoose.streamresult.StreamResult.catching;
 
+@NullMarked
 public final class ResultMappers {
     private ResultMappers() {
     }
