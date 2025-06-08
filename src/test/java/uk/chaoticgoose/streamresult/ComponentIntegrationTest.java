@@ -1,24 +1,25 @@
 package uk.chaoticgoose.streamresult;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import uk.chaoticgoose.streamresult.StreamResult.Failure;
 import uk.chaoticgoose.streamresult.StreamResult.Success;
 
-import java.rmi.server.RemoteRef;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static uk.chaoticgoose.streamresult.ResultCollectors.toResultList;
 import static uk.chaoticgoose.streamresult.ResultCollectors.toSingleResult;
-import static uk.chaoticgoose.streamresult.ResultGatherers.*;
 import static uk.chaoticgoose.streamresult.ResultGatherers.FailureAction.Continue;
 import static uk.chaoticgoose.streamresult.ResultGatherers.FailureAction.Stop;
+import static uk.chaoticgoose.streamresult.ResultGatherers.*;
 
 public class ComponentIntegrationTest {
     @Test
     void mapsSuccessesWithFallibleOperation() {
-        StreamResult<List<Integer>, Cause.Single<SomeException>> result = Stream.of(0, 1, 2)
+        StreamResult<List<Integer>, Cause.@NonNull Single<@NonNull SomeException>> result = Stream.of(0, 1, 2)
             .gather(mapFallible(this::throwsIfLessThanZero, Stop))
             .gather(mapSuccesses(n -> n - 4))
             .collect(toSingleResult());
@@ -29,7 +30,7 @@ public class ComponentIntegrationTest {
 
     @Test
     void doesNotProcessAnyMoreStreamElementsInMapFallibleIfFailureActionIsStop() {
-        ResultList<Integer, Cause.Single<SomeException>> result = Stream.of(1, 0, -1, -2)
+        ResultList<Integer, Cause.@NonNull Single<@NonNull SomeException>> result = Stream.of(1, 0, -1, -2)
             .gather(mapFallible(this::throwsIfLessThanZero, Stop))
             .gather(mapSuccesses(n -> {
                 if (n < 0) {
@@ -44,7 +45,7 @@ public class ComponentIntegrationTest {
 
     @Test
     void continuesProcessingStreamElementsInMapFallibleIfFailureActionIsContinue() {
-        ResultList<Integer, Cause.Single<SomeException>> result = Stream.of(1, 0, -1, 2)
+        ResultList<Integer, Cause.@NonNull Single<@NonNull SomeException>> result = Stream.of(1, 0, -1, 2)
             .gather(mapFallible(this::throwsIfLessThanZero, Continue))
             .gather(mapSuccesses(n -> {
                 if (n < 0) {
@@ -59,7 +60,7 @@ public class ComponentIntegrationTest {
 
     @Test
     void mapsFailuresAndSuccessesWithMultipleFallibleOperations() {
-        ResultList<Integer, Cause.Double<SomeException, OtherException>> results = Stream.of(-1, 0, 1)
+        ResultList<Integer, Cause.@NonNull Double<@NonNull SomeException, @NonNull OtherException>> results = Stream.of(-1, 0, 1)
             .gather(mapFallible(this::throwsIfLessThanZero, Continue))
             .gather(mapFallible2(this::throwsIfLessThanOne, Continue))
             .collect(toResultList());
@@ -73,7 +74,7 @@ public class ComponentIntegrationTest {
 
     @Test
     void throwsEachExceptionCause() {
-        StreamResult<List<Integer>, Cause.Triple<SomeException, OtherException, YetAnotherException>> result = Stream.of(-1, 0, 1)
+        StreamResult<List<Integer>, Cause.@NonNull Triple<@NonNull SomeException, @NonNull OtherException, @NonNull YetAnotherException>> result = Stream.of(-1, 0, 1)
             .gather(mapFallible(this::throwsIfLessThanZero, Continue))
             .gather(mapFallible2(this::throwsIfLessThanOne, Continue))
             .gather(mapFallible3(this::throwsIfEqualToOne, Continue))
@@ -81,7 +82,8 @@ public class ComponentIntegrationTest {
 
         try {
             switch (result) {
-                case Failure<?, Cause.Triple<SomeException, OtherException, YetAnotherException>> failure -> failure.cause().throwExceptions();
+                case Failure<?, Cause.@NonNull Triple<@NonNull SomeException, @NonNull OtherException, @NonNull YetAnotherException>> failure ->
+                    failure.cause().throwExceptions();
                 case Success<List<Integer>, ?> _ -> throw new RuntimeException();
             }
         } catch (OtherException | SomeException | YetAnotherException e) {
@@ -93,7 +95,7 @@ public class ComponentIntegrationTest {
 
     @Test
     void mapsSuccessesWithFallibleOperation_mapper() {
-        StreamResult<List<Integer>, Cause.Triple<SomeException, OtherException, YetAnotherException>> result = Stream.of(0, 1, 2)
+        StreamResult<List<Integer>, Cause.@NonNull Triple<@NonNull SomeException, @NonNull OtherException, @NonNull YetAnotherException>> result = Stream.of(0, 1, 2)
             .map(ResultMappers.mapFallible(this::throwsIfLessThanZero))
             .map(ResultMappers.mapFallible2(this::throwsIfLessThanOne))
             .map(ResultMappers.mapFallible3(this::throwsIfEqualToOne))

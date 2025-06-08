@@ -1,5 +1,6 @@
 package uk.chaoticgoose.streamresult;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.chaoticgoose.streamresult.StreamResult.Failure;
@@ -18,8 +19,8 @@ class StreamResultTest {
     private static final Cause SINGLE_CAUSE = Cause.Single.of(EXCEPTION);
     @SuppressWarnings("unchecked")
     private static final Function<Exception, Cause> mockCauseFunction = mock(Function.class);
-    private static final Success<String, Cause> SUCCESS = new Success<>(VALUE);
-    private static final Failure<String, Cause> FAILURE = new Failure<>(SINGLE_CAUSE);
+    private static final Success<String, @NonNull Cause> SUCCESS = new Success<>(VALUE);
+    private static final Failure<String, @NonNull Cause> FAILURE = new Failure<>(SINGLE_CAUSE);
 
     @BeforeEach
     void setUp() {

@@ -1,5 +1,6 @@
 package uk.chaoticgoose.streamresult;
 
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
@@ -10,7 +11,7 @@ class CauseTest {
     void singleCauseThrowsException() {
         var exception = new Exception1();
         try {
-            Cause.Single<Exception1> cause = Cause.Single.of(exception);
+            Cause.Single<@NonNull Exception1> cause = Cause.Single.of(exception);
             cause.throwException();
             fail("Should have thrown an exception");
         } catch (Exception1 e) {
@@ -28,7 +29,7 @@ class CauseTest {
     void doubleCauseThrowsException1() {
         var exception = new Exception1();
         try {
-            Cause.Double<Exception1, Exception2> cause = Cause.Double.fromSingle(Cause.Single.of(exception));
+            Cause.Double<@NonNull Exception1, @NonNull Exception2> cause = Cause.Double.fromSingle(Cause.Single.of(exception));
             cause.throwExceptions();
             fail("Should have thrown an exception");
         } catch (Exception1 | Exception2 e) {
@@ -46,7 +47,7 @@ class CauseTest {
     void doubleCauseThrowsException2() {
         var exception = new Exception2();
         try {
-            Cause.Double<Exception1, Exception2> cause = Cause.Double.ofSecond(exception);
+            Cause.Double<@NonNull Exception1, @NonNull Exception2> cause = Cause.Double.ofSecond(exception);
             cause.throwExceptions();
             fail("Should have thrown an exception");
         } catch (Exception1 | Exception2 e) {
@@ -64,7 +65,7 @@ class CauseTest {
     void tripleCauseThrowsException1() {
         var exception = new Exception1();
         try {
-            Cause.Triple<Exception1, Exception2, Exception3> cause = Cause.Triple.fromDouble(Cause.Double.fromSingle(Cause.Single.of(exception)));
+            Cause.Triple<@NonNull Exception1, @NonNull Exception2, @NonNull Exception3> cause = Cause.Triple.fromDouble(Cause.Double.fromSingle(Cause.Single.of(exception)));
             cause.throwExceptions();
             fail("Should have thrown an exception");
         } catch (Exception1 | Exception2 | Exception3 e) {
@@ -82,7 +83,7 @@ class CauseTest {
     void tripleCauseThrowsException2() {
         var exception = new Exception2();
         try {
-            Cause.Triple<Exception1, Exception2, Exception3> cause = Cause.Triple.fromDouble(Cause.Double.ofSecond(exception));
+            Cause.Triple<@NonNull Exception1, @NonNull Exception2, @NonNull Exception3> cause = Cause.Triple.fromDouble(Cause.Double.ofSecond(exception));
             cause.throwExceptions();
             fail("Should have thrown an exception");
         } catch (Exception1 | Exception2 | Exception3 e) {
@@ -100,7 +101,7 @@ class CauseTest {
     void tripleCauseThrowsException3() {
         Exception3 exception = new Exception3();
         try {
-            Cause.Triple<Exception1, Exception2, Exception3> cause = Cause.Triple.ofThird(exception);
+            Cause.Triple<@NonNull Exception1, @NonNull Exception2, @NonNull Exception3> cause = Cause.Triple.ofThird(exception);
             cause.throwExceptions();
             fail("Should have thrown an exception");
         } catch (Exception1 | Exception2 | Exception3 e) {
