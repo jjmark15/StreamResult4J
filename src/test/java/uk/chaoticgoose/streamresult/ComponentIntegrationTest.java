@@ -102,8 +102,17 @@ public class ComponentIntegrationTest {
             .map(ResultMappers.mapSuccesses(i -> i + 1))
             .collect(toSingleResult());
 
-        assertThat(result).isInstanceOf(Success.class);
-        assertThat(result.success().map(Success::value)).hasValue(List.of(-4, -3, -2));
+        try {
+            switch (result) {
+                case Failure<?, Cause.@NonNull Triple<@NonNull SomeException, @NonNull OtherException, @NonNull YetAnotherException>> failure ->
+                    failure.cause().throwExceptions();
+                case Success<List<Integer>, ?> _ -> throw new RuntimeException();
+            }
+        } catch (OtherException | SomeException | YetAnotherException e) {
+            // got here
+            return;
+        }
+        fail("Should have thrown an exception");
     }
 
     private Integer throwsIfLessThanZero(Integer i) throws SomeException {
