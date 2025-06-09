@@ -1,2 +1,5 @@
 [tools]
 java = "temurin-24"
+
+[_]
+"$schema" = "https://mise.jdx.dev/schema/mise.json"
